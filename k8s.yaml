@@ -1,0 +1,16 @@
+---
+- name: master
+  hosts: master
+  remote_user: ds
+  become: yes
+  roles:
+    - role: master
+      tags: master
+- name: node
+  hosts: node
+  remote_user: ds
+  become: yes
+  roles:
+    - role: node
+      tags: node
+
