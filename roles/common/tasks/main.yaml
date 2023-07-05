@@ -34,7 +34,7 @@
 - name: Add IP address of all hosts to all hosts
   lineinfile:
     dest: /etc/hosts
-    regexp: '.*{{ item }}$'
+    regexp: ".*{{ item }}$"
     line: "{{ hostvars[item].ansible_host }} {{item}}"
     state: present
   when: hostvars[item].ansible_host is defined
@@ -84,7 +84,7 @@
 
 - name: hold k8s tools
   dpkg_selections:
-    name: {{item}}
+    name: "{{item}}"
     selection: hold
   with_items:
     - kubelet
