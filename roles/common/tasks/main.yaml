@@ -44,6 +44,20 @@
         repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
         state: present
 
+- name: setup k8s repo
+  block:
+    - name: add k8s repo key
+      get_url:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        dest: /etc/apt/trusted.gpg.d/kubernetes.asc
+        mode: '0644'
+        force: true
+    - name: add k8s repo
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main"
+        state: present
+
+
 - name: install docker
   apt:
     pkg:
@@ -56,3 +70,6 @@
     - docker-buildx-plugin
     - docker-compose-plugin
     - apt-transport-https
+    - kubelet
+    - kubeadm
+    - kubectl
