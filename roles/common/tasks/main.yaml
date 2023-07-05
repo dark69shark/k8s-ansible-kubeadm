@@ -1,5 +1,11 @@
 ---
 # - debug: msg="{{lookup('fileglob', 'k8s.conf')}}"
+- name: Set authorized key taken from file
+  authorized_key:
+    user: ds
+    state: present
+    key: "{{ lookup('file', 'id_rsa.pub') }}"
+
 - name: "setup autoload kernel modules"
   copy:
     src: "{{lookup('fileglob', 'k8s_modules.conf')}}"
@@ -28,9 +34,11 @@
 - name: setup docker repo
   block:
     - name: add docker repo key
-      ansible.builtin.apt_key:
-        short_id: 7EA0A9C3F273FCD8
-        state: present
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/trusted.gpg.d/docker.asc
+        mode: '0644'
+        force: true
     - name: add docker repo
       ansible.builtin.apt_repository:
         repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
@@ -47,3 +55,4 @@
     - containerd.io
     - docker-buildx-plugin
     - docker-compose-plugin
+    - apt-transport-https
