@@ -65,24 +65,13 @@
       ansible.builtin.apt_repository:
         repo: "deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main"
         state: present
-    - name: install service containerd.io
-      get_url:
-        url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
-        dest: /etc/systemd/system/containerd.service
-    - name: reload systemd
-      systemd: 
-        name: containerd
-        daemon_reload: yes
-        enabled: yes
+
 
 - name: remove 
   apt:
     pkg:
     - containerd.io
     - docker-ce
-    - docker-ce-cli
-    - docker-buildx-plugin
-    - docker-compose-plugin
     state: absent
 
 - name: install need pkg
@@ -91,6 +80,9 @@
     - ca-certificates
     - curl
     - gnupg
+    - docker-ce-cli
+    - docker-buildx-plugin
+    - docker-compose-plugin
     - apt-transport-https
     - kubelet
     - kubeadm
@@ -108,6 +100,17 @@
       url: https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64
       dest: /usr/local/sbin/runc
       mode: '0755'
+  - name: install service containerd.io
+    get_url:
+      url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+      dest: /etc/systemd/system/containerd.service
+  - name: generate containerd config
+    shell: "containerd config dump > /etc/containerd/config.toml"
+  - name: reload systemd
+    systemd: 
+      name: containerd
+      daemon_reload: yes
+      enabled: yes
 
 - name: hold k8s tools
   dpkg_selections:
