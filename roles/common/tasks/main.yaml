@@ -70,6 +70,7 @@
   apt:
     pkg:
     - containerd.io
+    state: absent
 
 - name: install need pkg
   apt:
