@@ -10,7 +10,7 @@ stream {
     upstream masters {
         hash $remote_addr consistent;
         {% for server in groups.master %}
-        server {{item}}:6443;
+        server {{server}}:6443;
         {%endfor%}
     }
 
