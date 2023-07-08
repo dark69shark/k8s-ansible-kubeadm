@@ -1,5 +1,24 @@
+- name: nginx setup
+  block:
+  - name: nginx install
+    apt:
+      pkg: nginx
+  - name: nginx config setup
+    template:
+      src: lookup("fileglob","cp.conf.j2")
+      dest: /etc/nginx/conf.d/cp.conf
+      owner: nginx
+      group: nginx
+      mode: '0600'
+      validate: nginx -t
+      backup: yes
+  - systemd: 
+      name: nginx
+      enabled: yes
+      state: restarted
+
 - name: test
-  debug: 
-   msg: pod_cidr
+  shell: "kubeadm init --dry-run --one-output  --upload-certs --pod-network-cidr 172.20.0.0/16 --control-plane-endpoint master"
   run_once: true
   delegate_to: groups.master.0
+  register: kubeadm_output
