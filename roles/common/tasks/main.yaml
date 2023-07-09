@@ -111,6 +111,7 @@
       name: containerd
       daemon_reload: yes
       enabled: yes
+      state: started
 
 - name: hold k8s tools
   dpkg_selections:
