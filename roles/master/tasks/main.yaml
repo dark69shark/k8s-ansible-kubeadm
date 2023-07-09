@@ -17,14 +17,15 @@
   register: kubeadm_reset
 
 - name: kubeadm init
-  shell: "kubeadm init --dry-run  --upload-certs --token {{token}}  --pod-network-cidr {{pod_cidr}} --control-plane-endpoint master:443"
+  shell: "kubeadm init --upload-certs --token {{token}}  --pod-network-cidr {{pod_cidr}} --control-plane-endpoint master:443"
   run_once: true
   delegate_to: "{{groups.master.0}}"
   register: kubeadm_output
 
 - name: join master node
-  shell: "kubeadm join master:6443 --dry-run --token {{token}} --discovery-token-unsafe-skip-ca-verification --control-plane"
+  shell: "kubeadm join 127.0.0.1:443 --token {{token}} --discovery-token-unsafe-skip-ca-verification --control-plane"
   register: kubeadm_master_node
+  when: inventory_hostname != groups.master.0
 
 - debug: msg="{{kubeadm_output}}"
 - debug: msg="{{kubeadm_reset}}"
