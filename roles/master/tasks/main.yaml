@@ -13,7 +13,7 @@
       state: restarted
 
 - name: reset
-  shell: "kubeadm reset --dry-run"
+  shell: "kubeadm reset -f"
   register: kubeadm_reset
 
 - name: kubeadm init
