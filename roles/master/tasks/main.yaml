@@ -48,7 +48,7 @@
      src: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version.content|trim}}/cilium-linux-amd64.tar.gz"
      dest: /usr/local/bin
      remote_src: yes
-  - shell: "cilium install"
+  - shell: "KUBECONFIG=/etc/kubernetes/admin.conf cilium install"
     register: cilium_output
   - debug: msg="{{cilium_output}}"
     when: debug is defined
