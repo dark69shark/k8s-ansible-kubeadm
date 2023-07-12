@@ -36,7 +36,7 @@
     register: kubeadm_master_node
   - debug: msg="{{kubeadm_master_node}}"
     when: debug is defined
-  when: inventory_hostname != groups.master.0 join is defined
+  when: inventory_hostname != groups.master.0 and join is defined
 
 - name: Install cilium
   block:
