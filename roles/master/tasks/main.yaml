@@ -45,7 +45,7 @@
       return_content: yes
     register: cilium_version
   - unarchive:
-     src: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version.content}}/cilium-linux-amd64.tar.gz"
+     src: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version.content|trim}}/cilium-linux-amd64.tar.gz"
      dest: /usr/local/bin
      remote_src: yes
   - shell: "cilium install"
