@@ -40,10 +40,11 @@
 
 - name: Install cilium
   block:
-  - shell: "curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt"
+  - uri:
+      url: "https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt"
     register: cilium_version
   - unarchive:
-     url: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version}}/cilium-linux-amd64.tar.gz"
+     src: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version}}/cilium-linux-amd64.tar.gz"
      dest: /usr/local/bin
      remote_src: yes
   - shell: "cilium install"
