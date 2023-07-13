@@ -66,6 +66,18 @@
         repo: "deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main"
         state: present
 
+- name: helm install
+  block:
+  - name: add helm repo key
+    get_url:
+      url: https://baltocdn.com/helm/signing.asc
+      dest: /etc/apt/trusted.gpg.d/helm.asc
+      mode: '0644'
+      force: true
+  - name: add helm repo
+    ansible.builtin.apt_repository:
+      repo: "deb https://baltocdn.com/helm/stable/debian/ all main"
+      state: present
 
 - name: remove 
   apt:
@@ -87,6 +99,7 @@
     - kubelet
     - kubeadm
     - kubectl
+    - helm
 
 - name: install containerd.io and runc
   block:

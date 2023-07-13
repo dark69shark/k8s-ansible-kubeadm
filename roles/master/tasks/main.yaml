@@ -12,6 +12,7 @@
       enabled: yes
       state: restarted
 
+
 - name: reset
   shell: "kubeadm reset -f"
   register: kubeadm_reset
