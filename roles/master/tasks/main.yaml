@@ -24,9 +24,9 @@
       src: "{{ lookup('fileglob', '20-etcd-service-manager.conf') }}"
       dest: "/etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf"
   - systemd:
-    name: kubelet
-    stated: restarted
-    daemon_reload: true
+      name: kubelet
+      stated: restarted
+      daemon_reload: true
   - systemd: name=kubelet state=status
     register: kubelet_status
   - debug: msg="{{kubelet_status}}"
@@ -65,9 +65,7 @@
     - etcd-peer 
     - etcd-healthcheck-client
     - apiserver-etcd-client
-
-
-
+  - shell: "kubeadm init phase etcd local --config=/tmp/kubeconfig.yaml"
 
 - name: kubeadm init
   block:
