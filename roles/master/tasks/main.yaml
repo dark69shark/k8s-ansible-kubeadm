@@ -65,7 +65,7 @@
   - shell: "kubeadm init phase etcd local --config=/tmp/kubeconfig.yaml"
   - file: state=absent dest=/etc/kubernetes/pki/etcd/ca.key
     when: inventory_hostname != groups.master.0
-  when: etcd si defined
+  when: etcd is defined
 
 - name: kubeadm init
   block:
