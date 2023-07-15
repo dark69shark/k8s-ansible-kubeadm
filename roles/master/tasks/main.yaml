@@ -27,7 +27,7 @@
       name: kubelet
       state: restarted
       daemon_reload: true
-      register: kubelet_status
+    register: kubelet_status
   - debug: msg="{{kubelet_status}}"
     when: debug is defined
 
