@@ -48,6 +48,8 @@
     with_items: ["ca.crt","ca.key"]
   delegate_to: "{{groups.master.0}}"
   run_once: true
+  when: etcd si defined
+
 
 
 
@@ -65,6 +67,9 @@
   - shell: "kubeadm init phase etcd local --config=/tmp/kubeconfig.yaml"
   - file: state=absent dest=/etc/kubernetes/pki/etcd/ca.key
     when: inventory_hostname != groups.master.0
+  when: etcd si defined
+
+
 - name: kubeadm init
   block:
   -  shell: "kubeadm init --upload-certs --token {{token}} --certificate-key {{certificate_key}} --pod-network-cidr {{pod_cidr}} --control-plane-endpoint 127.0.0.1:443"
