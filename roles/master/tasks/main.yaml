@@ -23,6 +23,12 @@
     copy:
       src: "{{ lookup('fileglob', '20-etcd-service-manager.conf') }}"
       dest: "/etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf"
+  - systemd:
+    name: kubelet
+    stated: restarted
+    daemon_reload: true
+
+
 
 - name: reset
   shell: "kubeadm reset -f"
