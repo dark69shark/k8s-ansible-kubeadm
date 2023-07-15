@@ -17,11 +17,11 @@
   block:
   - name: Copy kubelet.conf
     copy:
-      src: "{{ lookup('file', 'kubelet.conf') }}"
+      src: "{{ lookup('fileglob', 'kubelet.conf') }}"
       dest: "/etc/systemd/system/kubelet.service.d/kubelet.conf"
   - name: Copy 20-etcd-service-manager.conf
     copy:
-      src: "{{ lookup('file', '20-etcd-service-manager.conf') }}"
+      src: "{{ lookup('fileglob', '20-etcd-service-manager.conf') }}"
       dest: "/etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf"
 
 - name: reset
