@@ -27,6 +27,10 @@
     name: kubelet
     stated: restarted
     daemon_reload: true
+  - systemd: name=kubelet state=status
+    register: kubelet_status
+  - debug: msg="{{kubelet_status}}"
+    when: debug is defined
 
 
 
