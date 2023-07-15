@@ -13,12 +13,50 @@
       state: restarted
 
 
+- name: setup systemd config etcd
+  block:
+  - name: Copy kubelet.conf
+    copy:
+      src: "{{ lookup('file', 'kubelet.conf') }}"
+      dest: "/etc/systemd/system/kubelet.service.d/kubelet.conf"
+  - name: Copy 20-etcd-service-manager.conf
+    copy:
+      src: "{{ lookup('file', '20-etcd-service-manager.conf') }}"
+      dest: "/etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf"
+
 - name: reset
   shell: "kubeadm reset -f"
   register: kubeadm_reset
   when: reset is defined
 - debug: msg="{{kubeadm_reset}}"
   when: debug is defined  
+
+- name: generate config
+  block:
+  - name: generate ca
+    shell: "kubeadm init phase certs etcd-ca"
+  - fetch: src=/etc/kubernetes/pki/etcd/ dest=buffer/ flat=yes
+  delegate_to: "{{groups.master.0}}"
+  run_once: true
+
+
+
+- name: generate config
+  block:
+  - template: src=kubeconfig.yaml.j2"  dest=/tmp/kubeconfig.yaml
+  - file: state=present dest=/etc/kubernetes/pki/etcd/
+  - copy: src=buffer/ dest=/etc/kubernetes/pki/etcd/
+  - file: state=absent dest=/etc/kubernetes/pki/etcd/ca.key
+    when: inventory_hostname != groups.master.0
+  - shell: "kubeadm init phase certs {{item}} --config=/tmp/kubeadmcfg.yaml"
+    with_items: 
+    - etcd-server
+    - etcd-peer 
+    - etcd-healthcheck-client
+    - apiserver-etcd-client
+
+
+
 
 - name: kubeadm init
   block:
@@ -53,4 +91,5 @@
     register: cilium_output
   - debug: msg="{{cilium_output}}"
     when: debug is defined
+  when: cilium is defined
 
