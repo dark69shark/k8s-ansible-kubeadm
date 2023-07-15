@@ -30,15 +30,16 @@
     register: kubelet_status
   - debug: msg="{{kubelet_status}}"
     when: debug is defined
+  when: etcd is defined
 
-
-
-- name: reset
-  shell: "kubeadm reset -f"
-  register: kubeadm_reset
+- name: Reset k8s cluster
+  block:
+  - name: reset
+    shell: "kubeadm reset -f"
+    register: kubeadm_reset
+  - debug: msg="{{kubeadm_reset}}"
+    when: debug is defined  
   when: reset is defined
-- debug: msg="{{kubeadm_reset}}"
-  when: debug is defined  
 
 - name: generate config
   block:
@@ -48,10 +49,7 @@
     with_items: ["ca.crt","ca.key"]
   delegate_to: "{{groups.master.0}}"
   run_once: true
-  when: etcd si defined
-
-
-
+  when: etcd is defined
 
 - name: generate config
   block:
@@ -69,10 +67,9 @@
     when: inventory_hostname != groups.master.0
   when: etcd si defined
 
-
 - name: kubeadm init
   block:
-  -  shell: "kubeadm init --upload-certs --token {{token}} --certificate-key {{certificate_key}} --pod-network-cidr {{pod_cidr}} --control-plane-endpoint 127.0.0.1:443"
+  -  shell: "kubeadm init --upload-certs --token {{token}} --certificate-key {{certificate_key}} --pod-network-cidr {{pod_cidr}} --control-plane-endpoint {{master_endpoint}}"
      run_once: true
      delegate_to: "{{groups.master.0}}"
      register: kubeadm_output
@@ -83,7 +80,7 @@
 
 - name: join master node
   block:
-  - shell: "kubeadm join 127.0.0.1:443 --token {{token}} --certificate-key {{certificate_key}} --discovery-token-unsafe-skip-ca-verification --control-plane"
+  - shell: "kubeadm join {{master_endpoint}} --token {{token}} --certificate-key {{certificate_key}} --discovery-token-unsafe-skip-ca-verification --control-plane"
     register: kubeadm_master_node
   - debug: msg="{{kubeadm_master_node}}"
     when: debug is defined
