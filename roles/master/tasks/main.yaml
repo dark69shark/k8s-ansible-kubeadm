@@ -43,12 +43,12 @@
 
 - name: generate config
   block:
-  - template: src=kubeconfig.yaml.j2"  dest=/tmp/kubeconfig.yaml
+  - template: src=kubeconfig.yaml.j2  dest=/tmp/kubeconfig.yaml
   - file: state=present dest=/etc/kubernetes/pki/etcd/
   - copy: src=buffer/ dest=/etc/kubernetes/pki/etcd/
   - file: state=absent dest=/etc/kubernetes/pki/etcd/ca.key
     when: inventory_hostname != groups.master.0
-  - shell: "kubeadm init phase certs {{item}} --config=/tmp/kubeadmcfg.yaml"
+  - shell: "kubeadm init phase certs {{item}} --config=/tmp/kubeconfig.yaml"
     with_items: 
     - etcd-server
     - etcd-peer 
