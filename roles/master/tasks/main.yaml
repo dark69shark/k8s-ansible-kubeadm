@@ -25,10 +25,9 @@
       dest: "/etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf"
   - systemd:
       name: kubelet
-      stated: restarted
+      state: restarted
       daemon_reload: true
-  - systemd: name=kubelet state=status
-    register: kubelet_status
+      register: kubelet_status
   - debug: msg="{{kubelet_status}}"
     when: debug is defined
 
