@@ -1,4 +1,4 @@
 token: avjegj.09ir5lly9af1pt2y
 certificate_key: 38c13b4a91e77e849bba0bc20d6edf2e747827ca51cafadc72d7b6f7b7effb98
 containerd_version: v1.7.2
-master_endpoint: 127.0.0.1:443
+master_endpoint: master-0:6443
