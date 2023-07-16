@@ -9,6 +9,6 @@ etcd:
     {% for server in groups.master %}
       - https://{{server}}:2379
     {%endfor%}
-    {# caFile: /etc/kubernetes/pki/etcd/ca.crt
+    caFile: /etc/kubernetes/pki/etcd/ca.crt
     certFile: /etc/kubernetes/pki/apiserver-etcd-client.crt
-    keyFile: /etc/kubernetes/pki/apiserver-etcd-client.key #}
+    keyFile: /etc/kubernetes/pki/apiserver-etcd-client.key
