@@ -118,7 +118,8 @@
       url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
       dest: /etc/systemd/system/containerd.service
   - name: generate containerd config
-    shell: "containerd config dump > /etc/containerd/config.toml"
+    shell: "containerd config default > /etc/containerd/config.toml"
+  - shell: "sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml"
   - name: reload systemd
     systemd: 
       name: containerd

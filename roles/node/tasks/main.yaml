@@ -1,6 +1,6 @@
 - name: join master node
   block:
-  - shell: "kubeadm join {{master_endpoint}} --token {{token}} --certificate-key {{certificate_key}} --discovery-token-unsafe-skip-ca-verification "
+  - shell: "kubeadm join {{master_endpoint}} --token {{token}} --certificate-key {{certificate_key}} --discovery-token-unsafe-skip-ca-verification"
     register: kubeadm_master_node
   - debug: msg="{{kubeadm_master_node}}"
     when: debug is defined
@@ -16,9 +16,9 @@
      src: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version.content|trim}}/cilium-linux-amd64.tar.gz"
      dest: /usr/local/bin
      remote_src: yes
-  - shell: "KUBECONFIG=/etc/kubernetes/admin.conf cilium install"
-    register: cilium_output
-  - debug: msg="{{cilium_output}}"
-    when: debug is defined
+  # - shell: "KUBECONFIG=/etc/kubernetes/admin.conf cilium install"
+  #   register: cilium_output
+  # - debug: msg="{{cilium_output}}"
+  #   when: debug is defined
   when: cilium is defined
 
