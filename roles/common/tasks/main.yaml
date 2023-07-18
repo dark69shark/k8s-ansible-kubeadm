@@ -136,3 +136,11 @@
     - kubeadm
     - kubectl
 
+- name: Reset k8s cluster
+  block:
+  - name: reset
+    shell: "kubeadm reset -f"
+    register: kubeadm_reset
+  - debug: msg="{{kubeadm_reset}}"
+    when: debug is defined  
+  when: reset is defined
