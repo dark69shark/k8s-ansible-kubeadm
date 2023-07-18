@@ -32,15 +32,6 @@
     when: debug is defined
   when: etcd is defined
 
-- name: Reset k8s cluster
-  block:
-  - name: reset
-    shell: "kubeadm reset -f"
-    register: kubeadm_reset
-  - debug: msg="{{kubeadm_reset}}"
-    when: debug is defined  
-  when: reset is defined
-
 - name: generate config
   block:
   - name: generate ca
