@@ -137,17 +137,12 @@
   run_once: true
 
 - name: Implement manifests
-  block:
-    - template:
-        src: "{{ lookup('file', '{{item}}') }}"
-        dest: "/tmp/{{item}}"
-      loop: "{{ lookup('fileglob', '{{ns}}/*.j2', wantlist=True) }}"
-    - name: implement {{item}}
-      shell: "kubectl apply -f /tmp/{{item}}"
-      loop: "{{ lookup('fileglob', '{{ns}}/*.j2', wantlist=True) }}"
-  loop:
+  include_tasks: implement_manifest.yaml
+  loop: 
   - kube-system
+  - tools
   loop_control:
-   loop_var: ns
+    loop_var: ns
+
   delegate_to: "{{groups.master.0}}"
   run_once: true
