@@ -138,13 +138,13 @@
 
 - name: Implement manifests
   block:
-  - block:
     - template:
-      src: "{{ lookup('file', '{{item}}') }}"
-      dest: "/tmp/{{item}}"
+        src: "{{ lookup('file', '{{item}}') }}"
+        dest: "/tmp/{{item}}"
+      loop: "{{ lookup('fileglob', '{{ns}}/*.j2', wantlist=True) }}"
     - name: implement {{item}}
       shell: "kubectl apply -f /tmp/{{item}}"
-    loop: "{{ lookup('fileglob', '{{ns}}/*.j2', wantlist=True) }}"
+      loop: "{{ lookup('fileglob', '{{ns}}/*.j2', wantlist=True) }}"
   loop:
   - kube-system
   loop_control:
