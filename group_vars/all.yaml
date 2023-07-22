@@ -4,3 +4,7 @@ containerd_version: v1.7.2
 nginx_master_port: 9443
 master_hostname: master
 master_endpoint: "{{master_hostname}}:{{nginx_master_port}}"
+nfs:
+  path: "/mnt/nfs/k8s"
+  server: 192.168.0.181
+  provisioner: ""

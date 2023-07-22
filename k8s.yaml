@@ -6,6 +6,8 @@
   roles:
     - role: master
       tags: master
+  environment:
+    KUBECONFIG: '/etc/kubernetes/admin.conf'
 - name: node
   hosts: node
   remote_user: ds

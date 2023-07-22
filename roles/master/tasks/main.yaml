@@ -97,28 +97,22 @@
     when: debug is defined
   when: inventory_hostname != groups.master.0 and join is defined
 
-# - name: Install cilium
-#   block:
-#   - uri:
-#       url: "https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt"
-#       return_content: yes
-#     register: cilium_version
-#   - unarchive:
-#      src: "https://github.com/cilium/cilium-cli/releases/download/{{cilium_version.content|trim}}/cilium-linux-amd64.tar.gz"
-#      dest: /usr/local/bin
-#      remote_src: yes
-#   - shell: "KUBECONFIG=/etc/kubernetes/admin.conf cilium install"
-#     register: cilium_output
-#   - debug: msg="{{cilium_output}}"
-#     when: debug is defined
-#   delegate_to: "{{groups.master.0}}"
-#   run_once: true
-#   when: cilium is defined
 
-- name: Install cilium
+- block:
+  - name: Add all helm repo
+    shell: "helm repo add {{ item.key }} {{ item.value }}"
+    with_dict:
+      nfs-subdir-external-provisioner: "https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/"
+      cilium: "https://helm.cilium.io/"
+  - name: perform helm repo update
+    shell:  "helm repo update"
+    register: helm_repo_update
+  - debug: msg="{{helm_repo_update}}"
+    when: debug is defined
+
+- name: Install env.
   block:
-  - name: helm cilium repo added
-    shell: "helm repo add cilium https://helm.cilium.io/ && helm repo update"
+  ##cilium instll
   - name: install cilium helm
     shell: "KUBECONFIG=/etc/kubernetes/admin.conf
             helm install cilium cilium/cilium \
@@ -126,8 +120,34 @@
             --set kubeProxyReplacement=strict \
             --set k8sServiceHost={{master_hostname}} \
             --set k8sServicePort={{nginx_master_port}}"
+    when: cilium is defined
   - debug: msg="{{cilium_output}}"
     when: debug is defined
+  ## nfs-provisioner install
+  - name: Install nfs-subdir-external-provisioner
+    shell: "KUBECONFIG=/etc/kubernetes/admin.conf \
+             helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+            --set nfs.server={{nfs.server}} \
+            --set nfs.path={{nfs.path}} \
+            --namespace kube-system"
+    when: nfs_provisioner is defined
+  - debug: msg="{{nfs_provisioner_output}}"
+    when: debug is defined  
   delegate_to: "{{groups.master.0}}"
   run_once: true
-  when: cilium is defined
+
+- name: Implement manifests
+  block:
+  - block:
+    - template:
+      src: "{{ lookup('file', '{{item}}') }}"
+      dest: "/tmp/{{item}}"
+    - name: implement {{item}}
+      shell: "kubectl apply -f /tmp/{{item}}"
+    loop: "{{ lookup('fileglob', '{{ns}}/*.j2', wantlist=True) }}"
+  loop:
+  - kube-system
+  loop_control:
+   loop_var: ns
+  delegate_to: "{{groups.master.0}}"
+  run_once: true
