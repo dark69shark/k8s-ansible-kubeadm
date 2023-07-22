@@ -60,7 +60,7 @@
 
 - name: kubeadm init
   block:
-  -  name: kubeadm init is performed on {{groups.master.0}}
+  -  name: "kubeadm init is performed on {{groups.master.0}}"
   -  shell: "kubeadm init 
             --upload-certs 
             --token {{token}} 
