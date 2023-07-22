@@ -1,9 +1,7 @@
-# - template:
-#     src: "{{ lookup('file', '{{item}}') }}"
-#     dest: "/tmp/{{item}}"
-#   loop: "{{ lookup('file', '{{ns}}/*.j2') }}"
-# - name: implement {{item}}
-#   shell: "kubectl apply -f /tmp/{{item}}"
-#   loop: "{{ lookup('fileglob', '{{ns}}/*.j2') }}"
-- debug: msg="{{item}} {{ns}}"
-  loop: "{{ lookup('fileglob', '{{ns}}/*.j2') }}"
+- template:
+    src: "{{item}}"
+    dest: "/tmp/{{item}}"
+  loop: "{{ lookup('template', '{{ns}}/*.j2') }}"
+- name: implement {{item}}
+  shell: "kubectl apply -f /tmp/{{item|basename}}"
+  loop: "{{ lookup('template', '{{ns}}/*.j2') }}"
