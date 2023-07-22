@@ -60,6 +60,7 @@
 
 - name: kubeadm init
   block:
+  -  name: kubeadm init is performed on {{groups.master.0}}
   -  shell: "kubeadm init 
             --upload-certs 
             --token {{token}} 
@@ -70,9 +71,20 @@
      run_once: true
      delegate_to: "{{groups.master.0}}"
      register: kubeadm_output
+  - name: waiting master
+    uri: 
+      url: "https://{{master_endpoint}}"
+      ca_path: /etc/kubernetes/pki/ca.crt
+      client_cert: /etc/kubernetes/pki/apiserver-kubelet-client.crt
+      client_key:  /etc/kubernetes/pki/apiserver-kubelet-client.key
+    register: _result
+    until: _result.status == 200
+    retries: 10
+    delay: 10
   - debug: msg="{{kubeadm_output}}"
     when: debug is defined
-  when: inventory_hostname == groups.master.0 and init is defined  
+  when: inventory_hostname == groups.master.0 and init is defined
+
 
 
 - name: join master node
@@ -103,8 +115,10 @@
 
 - name: Install cilium
   block:
-  - shell: "helm repo add cilium https://helm.cilium.io/ && helm repo update"
-  - shell: "KUBECONFIG=/etc/kubernetes/admin.conf
+  - name: helm cilium repo added
+    shell: "helm repo add cilium https://helm.cilium.io/ && helm repo update"
+  - name: install cilium helm
+    shell: "KUBECONFIG=/etc/kubernetes/admin.conf
             helm install cilium cilium/cilium \
             --namespace kube-system \
             --set kubeProxyReplacement=strict \
