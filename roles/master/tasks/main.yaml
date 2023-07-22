@@ -80,9 +80,9 @@
       client_cert: /etc/kubernetes/pki/apiserver-kubelet-client.crt
       client_key:  /etc/kubernetes/pki/apiserver-kubelet-client.key
     register: _result
-    until: _result.status == 200
-    retries: 10
-    delay: 10
+    # until: _result.status == 200
+    # retries: 10
+    # delay: 10
   - debug: msg="{{_result}}"
     when: debug is defined
   when: inventory_hostname == groups.master.0 and init is defined
@@ -120,6 +120,7 @@
             --set kubeProxyReplacement=strict \
             --set k8sServiceHost={{master_hostname}} \
             --set k8sServicePort={{nginx_master_port}}"
+    register: cilium_output
     when: cilium is defined
   - debug: msg="{{cilium_output}}"
     when: debug is defined
@@ -130,6 +131,7 @@
             --set nfs.server={{nfs.server}} \
             --set nfs.path={{nfs.path}} \
             --namespace kube-system"
+    register: nfs_provisioner_output
     when: nfs_provisioner is defined
   - debug: msg="{{nfs_provisioner_output}}"
     when: debug is defined  
