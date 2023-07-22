@@ -1,7 +1,19 @@
+- name: Create temporary  directory
+  tempfile:
+    state: directory
+    suffix: manifests
+  register: tmpdir
+
 - block:
   - template:
       src: "{{ lookup('template', '{{ns}}/{{item|basename}}') }}"
-      dest: "/tmp/{{item|basename}}"
+      dest: "{{tmpdir.path}}/{{item|basename}}"
   - name: implement {{item|basename}}
-    shell: "kubectl apply -f /tmp/{{item|basename}}"
+    shell: "kubectl apply -f {{tmpdir.path}}/{{item|basename}}"
   with_fileglob: "templates/{{ns}}/*.j2"
+
+- name: delete tmpdir
+  file:
+    path: "{{tmpdir.path}}"
+    state: absent
+  when: tmpdir.path is defined
