@@ -60,17 +60,19 @@
 
 - name: kubeadm init
   block:
-  -  name: "kubeadm init is performed on {{groups.master.0}}"
-     shell: "kubeadm init 
+  - name: "kubeadm init is performed on {{groups.master.0}}"
+    shell: "kubeadm init 
             --upload-certs 
             --token {{token}} 
             --certificate-key {{certificate_key}} 
             --pod-network-cidr {{pod_cidr}} 
             --control-plane-endpoint {{master_endpoint}}
             --skip-phases=addon/kube-proxy"
-     run_once: true
-     delegate_to: "{{groups.master.0}}"
-     register: kubeadm_output
+    run_once: true
+    delegate_to: "{{groups.master.0}}"
+    register: kubeadm_output
+  - debug: msg="{{kubeadm_output}}"
+    when: debug is defined
   - name: waiting master
     uri: 
       url: "https://{{master_endpoint}}"
@@ -81,7 +83,7 @@
     until: _result.status == 200
     retries: 10
     delay: 10
-  - debug: msg="{{kubeadm_output}}"
+  - debug: msg="{{_result}}"
     when: debug is defined
   when: inventory_hostname == groups.master.0 and init is defined
 
