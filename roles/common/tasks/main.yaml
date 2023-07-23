@@ -119,7 +119,10 @@
       dest: /etc/systemd/system/containerd.service
   - name: generate containerd config
     shell: "containerd config default > /etc/containerd/config.toml"
-  - shell: "sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml"
+  - lineinfile: 
+      path: /etc/containerd/config.toml
+      regexp: "SystemdCgroup = false"
+      line: "SystemdCgroup = true"
   - name: reload systemd
     systemd: 
       name: containerd

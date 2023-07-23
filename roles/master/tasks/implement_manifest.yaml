@@ -4,12 +4,12 @@
     suffix: manifests
   register: tmpdir
 
-- block:
-  - template:
-      src: "{{ lookup('template', '{{ns}}/{{item|basename}}') }}"
-      dest: "{{tmpdir.path}}/{{item|basename}}"
-  - name: implement {{item|basename}}
-    shell: "kubectl apply -f {{tmpdir.path}}/{{item|basename}}"
+- template:
+    src: "{{lookup('template', '{{ns}}/{{item|basename}}')}}"
+    dest: "{{tmpdir.path}}/{{item|basename}}"
+  with_fileglob: "templates/{{ns}}/*.j2"
+- name: "implement {{item|basename}}"
+  shell: "kubectl apply -f {{tmpdir.path}}/{{item|basename}}"
   with_fileglob: "templates/{{ns}}/*.j2"
 
 - name: delete tmpdir
