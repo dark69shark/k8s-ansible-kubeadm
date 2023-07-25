@@ -10,7 +10,7 @@ events {
 
 
 stream {
-    upstream masters {
+    upstream masters-cp {
         hash $remote_addr consistent;
         {% for server in groups.master %}
         server {{server}}:6443;
@@ -21,12 +21,11 @@ stream {
         listen {{nginx_master_port}};
         proxy_connect_timeout 1s;
         proxy_timeout 3s;
-        proxy_pass masters;
+        proxy_pass masters-cp;
     }
-}
 
-stream {
-    upstream masters {
+
+    upstream masters-http-ing {
         hash $remote_addr consistent;
         {% for server in groups.master %}
         server {{server}}:{{shared_http_nodeport}};
@@ -37,13 +36,10 @@ stream {
         listen 80;
         proxy_connect_timeout 1s;
         proxy_timeout 3s;
-        proxy_pass masters;
+        proxy_pass masters-http-ing;
     }
-}
 
-
-stream {
-    upstream masters {
+    upstream masters-https-ing {
         hash $remote_addr consistent;
         {% for server in groups.master %}
         server {{server}}:{{shared_https_nodeport}};
@@ -54,6 +50,6 @@ stream {
         listen 443;
         proxy_connect_timeout 1s;
         proxy_timeout 3s;
-        proxy_pass masters;
+        proxy_pass masters-https-ing;
     }
 }
