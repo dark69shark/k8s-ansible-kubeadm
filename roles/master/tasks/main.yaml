@@ -119,7 +119,13 @@
             --namespace kube-system \
             --set kubeProxyReplacement=strict \
             --set k8sServiceHost={{master_hostname}} \
-            --set k8sServicePort={{nginx_master_port}}"
+            --set k8sServicePort={{nginx_master_port}}
+            --set ingressController.enabled=true \
+            --set loadBalancer.l7.backend=envoy \
+            --set ingressController.service.secureNodePort={{shared_https_nodeport}} \
+            --set ingressController.service.insecureNodePort={{shared_http_nodeport}} \
+            --set ingressController.loadbalancerMode=shared \
+            --set ingressController.service.type=NodePort"
     register: cilium_output
     when: cilium is defined
   - debug: msg="{{cilium_output}}"

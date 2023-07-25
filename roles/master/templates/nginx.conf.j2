@@ -24,3 +24,36 @@ stream {
         proxy_pass masters;
     }
 }
+
+stream {
+    upstream masters {
+        hash $remote_addr consistent;
+        {% for server in groups.master %}
+        server {{server}}:{{shared_http_nodeport}};
+        {%endfor%}
+    }
+
+    server {
+        listen 80;
+        proxy_connect_timeout 1s;
+        proxy_timeout 3s;
+        proxy_pass masters;
+    }
+}
+
+
+stream {
+    upstream masters {
+        hash $remote_addr consistent;
+        {% for server in groups.master %}
+        server {{server}}:{{shared_https_nodeport}};
+        {%endfor%}
+    }
+
+    server {
+        listen 443;
+        proxy_connect_timeout 1s;
+        proxy_timeout 3s;
+        proxy_pass masters;
+    }
+}
