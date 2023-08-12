@@ -124,6 +124,20 @@
       path: /etc/containerd/config.toml
       regexp: "SystemdCgroup = false"
       line: "SystemdCgroup = true"
+  - lineinfile:
+      path: /etc/containerd/config.toml
+      search_string: 'config_path = ""'
+      insertafter: '^\s+[plugins."io.containerd.grpc.v1.cri".registry]'
+      line: '     config_path = "/etc/containerd/certs.d"'
+  - file:
+      path: /etc/containerd/certs.d/_default/
+      state: directory
+      recursive: yes
+    when: local_docker_registry is defined
+  - template:
+      src: "hosts.toml.j2"
+      dest: /etc/containerd/certs.d/_default/hosts.toml
+    when: local_docker_registry is defined
   - name: reload systemd
     systemd: 
       name: containerd

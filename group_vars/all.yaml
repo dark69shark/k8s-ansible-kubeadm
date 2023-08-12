@@ -6,6 +6,7 @@ master_hostname: master
 master_endpoint: "{{master_hostname}}:{{nginx_master_port}}"
 shared_http_nodeport: 30080
 shared_https_nodeport: 30443
+local_docker_registry: "http://registry.k8s.as.local"
 nfs:
   path: "/mnt/nfs/k8s"
   server: 192.168.0.181
